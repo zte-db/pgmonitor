@@ -90,7 +90,14 @@ def pg_dbsize(c, prev, elapsed):
         val[i+1] = float(curr[i] - prev[i]) / elapsed
     return val, curr
 
+# debug
+# flagg = 0
 def pg_conn(c):
+    # global flagg
+    # if flagg < 8:
+    #     print(flagg)
+    #     flagg += 1
+    #     c.execute("select pg_sleep(0.5);")
     val = [0]*13
     c.execute("select count(*) used from pg_stat_activity")
     conn_cnt = c.fetchone()[0]

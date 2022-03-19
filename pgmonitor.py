@@ -67,6 +67,7 @@ def parseargs():
     parser.add_argument('--pwd',type=str,default='postgres',help='password of the PG user')
     parser.add_argument('--chances',type=int,default=4,help='number of maximum re-connection allowed')
     parser.add_argument('--printall',action='store_true',default=False,help='print all monitoring data')
+    parser.add_argument('--check',action='store_true',default=False,help='check the first piece of data, if invalid then exit')
     parser.add_argument('--output',type=str,default='metrics.csv',help='output csv file name')
     args = parser.parse_args()
     interval = args.interval
@@ -77,8 +78,9 @@ def parseargs():
     pwd = args.pwd
     chances = args.chances
     printall = args.printall
+    check = args.check
     fname = args.output
-    return interval, omit, host, port, user, pwd, chances, printall, fname
+    return interval, omit, host, port, user, pwd, chances, printall, check, fname
 
 def get_valid(omit, metrics):
     try:
@@ -91,7 +93,7 @@ def get_valid(omit, metrics):
         print('Initialization error, please check the \'--omit\' argument and the metrics.')
         exit()
 
-def run_monitor(interval, valid, config, fname, printall, chances):
+def run_monitor(interval, valid, config, fname, printall, chances, check):
     functions = get_functions()
     ftypes = get_ftypes()
 
@@ -113,8 +115,11 @@ def run_monitor(interval, valid, config, fname, printall, chances):
     x = monitor(config, (0, curr), info, chances, results)
     now = time.time()
     if x != 0 or now - st > interval:
-        print('Please check the database system!')
-        exit()
+        print('First piece of data invalid, please check the database system!')
+        if check:
+            exit()
+        else:
+            curr = prev
 
     while True:
         prev = curr
@@ -153,11 +158,11 @@ def run_monitor(interval, valid, config, fname, printall, chances):
         st = st1
 
 if __name__=='__main__':
-    interval, omit, host, port, user, pwd, chances, printall, fname = parseargs()
+    interval, omit, host, port, user, pwd, chances, printall, check, fname = parseargs()
     metrics = get_metrics()
     valid = get_valid(omit, metrics)
     config = (host, port, user, pwd)
-    run_monitor(interval, valid, config, fname, printall, chances)
+    run_monitor(interval, valid, config, fname, printall, chances, check)
         
 
     

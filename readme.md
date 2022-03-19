@@ -42,6 +42,8 @@ python pgmonitor.py
 
 --output：输出文件名，默认metrics.csv
 
+注意：第一个时间戳的数据不会被记录，因为它无法计算一些增量指标。每个查询的时间限制为 $\text{interval}*0.8/(\text{chances}+1)$ ，超时查询会立刻停止，并重新连接数据库，最大重连次数为chances（初次连接不计入）。所以chances越大，时间限制越短，可根据实际情况调节。
+
 ## 添加新采集项（未测试）
 
 建议先编写dool插件，测试能够正常运行，再添加到queries.py
