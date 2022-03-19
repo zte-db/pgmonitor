@@ -120,12 +120,13 @@ def run_monitor(interval, valid, config, fname, printall, chances, check):
             exit()
         else:
             curr = prev
+    st1 = st
 
     while True:
         prev = curr
         curr = {}
         results = {}
-        st1 = st + interval
+        st1 += interval
 
         # get next timestamp
         now = time.time()
@@ -144,6 +145,7 @@ def run_monitor(interval, valid, config, fname, printall, chances, check):
         now = time.time()
         if x != 0 or now - st1 > interval:
             print('Missing data at {} with error {}'.format(st1, x))
+            curr = prev
         else:
             strs = []
             for i in range(len(valid)):
@@ -155,7 +157,7 @@ def run_monitor(interval, valid, config, fname, printall, chances, check):
             f.flush()
             if printall:
                 print(allstrs)
-        st = st1
+            st = st1
 
 if __name__=='__main__':
     interval, omit, host, port, user, pwd, chances, printall, check, fname = parseargs()
