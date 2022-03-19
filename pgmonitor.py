@@ -30,7 +30,7 @@ def monitor(config, progress, info, chances, results):
     now = time.time()
     if now >= ddl:
         return 1
-    cursor.execute('SET statement_timeout = \'{}s\''.format(ddl-now))
+    cursor.execute('SET statement_timeout = \'{}s\''.format((ddl-now)/(chances+1)))
 
     # check all metrics
     for i in range(len(ftypes)):
