@@ -27,6 +27,10 @@ def monitor(config, progress, info, chances, results):
     # connect or re-connect
     conn = psycopg2.connect(host=host, port=port, user=user, password=pwd)
     cursor = conn.cursor()
+    now = time.time()
+    if now >= ddl:
+        return 1
+    cursor.execute('SET statement_timeout = \'{}s\''.format(ddl-now))
 
     # check all metrics
     for i in range(len(ftypes)):
@@ -44,9 +48,11 @@ def monitor(config, progress, info, chances, results):
         except:
             print('Failed at', functions[i])
             safeclosec(conn)
-            if time.time() > ddl or chances == 0:
+            if time.time() >= ddl or chances == 0:
                 return 1
             return monitor(config, (i, curr), info, chances-1, results)
+        if time.time() >= ddl:
+            return 1
 
     safeclosec(conn)
     return 0
@@ -102,7 +108,7 @@ def run_monitor(interval, valid, config, fname, printall, chances):
     prev = get_init_prev()
     curr = {}
     # ddl, valid, prev, elapsed, functions, ftypes
-    info = (st+interval, valid, prev, interval, functions, ftypes)
+    info = (st+interval*0.8, valid, prev, interval, functions, ftypes)
     results = {}
     x = monitor(config, (0, curr), info, chances, results)
     now = time.time()
@@ -123,7 +129,7 @@ def run_monitor(interval, valid, config, fname, printall, chances):
         
         try:
             time.sleep(st1 - now)
-            x = monitor(config, (0, curr), (st1+interval, valid, prev, st1-st, functions, ftypes), chances, results)
+            x = monitor(config, (0, curr), (st1+interval*0.8, valid, prev, st1-st, functions, ftypes), chances, results)
         except KeyboardInterrupt:
             print('Interrupted by Ctrl+C')
             exit()
