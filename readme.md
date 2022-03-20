@@ -63,3 +63,16 @@ dool_pytime.py：dool插件，用python的time.time()采集时间数据
 check_all.py：根据csv，检查数据缺失情况（第一条数据不算），依次打印缺失个数、总采集项数、缺失比例、连续缺失2条及以上的数据段的个数、平均每个缺失段的连续缺失个数、最大连续缺失个数。输入文件名为metrics.csv。
 
 check_result.py：根据pgmonitor打印信息，打印缺失个数。理论上和check_all.py打印的信息一致。输入文件名为result.txt。
+
+## 推荐用法
+
+因为dbsize, transactions, buffer容易缺数据，所以建议将它们和其他项分开采集，即：
+
+```sh
+python -u pgmonitor --omit time,dbsize,transactions,buffer > result1.txt
+python -u pgmonitor --omit time,conn,lockwaits,settings > result2.txt
+```
+
+若在ubuntu的docker内使用pgmonitor，并不需要修改IP和端口，用默认的localhost和5432即可。
+
+检查是否正确采集的方法：观察dbsize的后几个采集项，它们显示增量信息。若没有oltpbench运行，则数值为0；否则有数值。
