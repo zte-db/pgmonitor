@@ -46,7 +46,7 @@ def monitor(config, progress, info, chances, results):
             print('Interrupted by Ctrl+C')
             exit()
         except:
-            print('Failed at', functions[i])
+            print('Failed at', time.time(), functions[i])
             safeclosec(conn)
             if time.time() >= ddl or chances == 0:
                 return 1
@@ -65,7 +65,7 @@ def parseargs():
     parser.add_argument('--port',type=int,default=5432,help='port of the PG server')
     parser.add_argument('--user',type=str,default='postgres',help='user name of PG')
     parser.add_argument('--pwd',type=str,default='postgres',help='password of the PG user')
-    parser.add_argument('--chances',type=int,default=4,help='number of maximum re-connection allowed')
+    parser.add_argument('--chances',type=int,default=2,help='number of maximum re-connection allowed')
     parser.add_argument('--printall',action='store_true',default=False,help='print all monitoring data')
     parser.add_argument('--check',action='store_true',default=False,help='check the first piece of data, if invalid then exit')
     parser.add_argument('--output',type=str,default='metrics.csv',help='output csv file name')
@@ -131,6 +131,7 @@ def run_monitor(interval, valid, config, fname, printall, chances, check):
         # get next timestamp
         now = time.time()
         while st1 <= now:
+            print('Missing data at {} because of time out'.format(st1))
             st1 += interval
         
         try:

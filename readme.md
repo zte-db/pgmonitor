@@ -36,7 +36,7 @@ python pgmonitor.py
 
 --pwd：pg用户的密码，默认postgres
 
---chances：每次采集的最大重连次数，默认4
+--chances：每次采集的最大重连次数，默认2（旧版本默认4）
 
 --printall：开关，若打开，打印采集到的数据。不写就不打印
 
@@ -55,3 +55,11 @@ python pgmonitor.py
 其次，按queries.py内的说明，修改其他函数，添加新采集项的信息。
 
 最后运行测试。如需debug，可注释掉部分except。
+
+## 其他文件
+
+dool_pytime.py：dool插件，用python的time.time()采集时间数据
+
+check_all.py：根据csv，检查数据缺失情况（第一条数据不算），依次打印缺失个数、总采集项数、缺失比例、连续缺失2条及以上的数据段的个数、平均每个缺失段的连续缺失个数、最大连续缺失个数。输入文件名为metrics.csv。
+
+check_result.py：根据pgmonitor打印信息，打印缺失个数。理论上和check_all.py打印的信息一致。输入文件名为result.txt。
