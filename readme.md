@@ -69,8 +69,8 @@ check_result.py：根据pgmonitor打印信息，打印缺失个数。理论上�
 因为dbsize, transactions, buffer容易缺数据，所以建议将它们和其他项分开采集，即：
 
 ```sh
-python -u pgmonitor --omit time,dbsize,transactions,buffer > result1.txt
-python -u pgmonitor --omit time,conn,lockwaits,settings > result2.txt
+python -u pgmonitor --omit time,dbsize,transactions,buffer --output metricsx.csv > result1.txt
+python -u pgmonitor --omit time,conn,lockwaits,settings --output metricsy.csv > result2.txt
 ```
 
 若在ubuntu的docker内使用pgmonitor，并不需要修改IP和端口，用默认的localhost和5432即可。
